@@ -31,7 +31,7 @@
   ```
   HTML:
   ```html
-  <template>
+  <template>  
     <div>
     <!-- ... -->
     <img src="http://cdn.duitang.com/uploads/item/201501/08/20150108164231_t432j.thumb.700_0.png" @click="openPreviewPhoto" />
@@ -46,4 +46,4 @@
   this.$refs.preview.setDialogTableVisible();
   this.$refs.preview.handleSetActiveItem(index);
   ```
-关于封装还有很多要学的，有很多不足还需要去改进...
+关于封装还有很多要学的，有很多不足还需要去改进... 

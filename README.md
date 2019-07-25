@@ -31,19 +31,21 @@
   ```
   HTML:
   ```html
-  <template>  
-    <div>
-    <!-- ... -->
-    <img src="http://cdn.duitang.com/uploads/item/201501/08/20150108164231_t432j.thumb.700_0.png" @click="openPreviewPhoto" />
+  <template>
+  <div class="container">
+    <ul>
+      <li v-for="(item, i) in previewPictureArray" :key="i">
+        <img :src="item.fullThumbnailPath" @click.stop="handlePreviewPhoto(i)">
+      </li>
+    </ul>
     <!-- 图片预览组件 -->
-    <PreviewPhoto ref="preview" :pictureArray="previewPictureArray" ></PreviewPhoto>
-    </div>
+    <preview-photo ref="preview" :previewPictureArray="previewPictureArray"></preview-photo>
+  </div>
   </template>
   ```
   方法调用：
   ```javascript
   // 打开预览组件并设置选中图片（默认为第一个）
-  this.$refs.preview.setDialogTableVisible();
   this.$refs.preview.handleSetActiveItem(index);
   ```
 关于封装还有很多要学的，有很多不足还需要去改进... 

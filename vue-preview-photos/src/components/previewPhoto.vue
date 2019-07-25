@@ -1,13 +1,13 @@
 <template>
 	<transition name="fade">
-		<div class="photo-preview" v-show="dialogTableVisible">
+		<div class="photo-preview" v-show="dialogVisible">
 			<div class="thumbnail-img-wrap">
-				<span class="close" @click="setDialogTableVisible">X</span>
+				<span class="close" @click="closeDialog">X</span>
 				<div class="thumbnail-img-container">
 					<div class="thumbnail-img-list">
 						<div
 							class="thumbnail-img-item"
-							v-for="(item, index) in pictureArray"
+							v-for="(item, index) in previewPictureArray"
 							:key="index"
 							:class="initialIndex == index ? 'active' : ''"
 						>
@@ -18,15 +18,15 @@
 			</div>
 			<div class="model">
 				<el-carousel
-					indicator-position="none"
-					:arrow="arrowVisible"
 					ref="carousel"
+					:arrow="arrowVisible"
 					:initial-index="initialIndex"
 					:autoplay="false"
 					@change="handleImgChange"
+					indicator-position="none"
 				>
-					<el-carousel-item v-for="(item, index) in pictureArray" :key="index" name="index">
-						<div class="carousel-item_picture" @click="setDialogTableVisible">
+					<el-carousel-item v-for="(item, index) in previewPictureArray" :key="index">
+						<div class="carousel-item_picture" @click="closeDialog">
 							<img
 								:src="item.fullPath"
 								v-drag
@@ -43,7 +43,7 @@
 	</transition>
 </template>
 <script>
-//拖拽指令
+//拖拽指令  当图片大于屏幕大小时可以拖拽
 let translate;
 const drag = {
 	bind: function(el, binding) {
@@ -99,23 +99,22 @@ const drag = {
 					el.style.left = L + "px";
 				}
 			};
-
 			document.onmouseup = function(e) {
 				e.stopPropagation();
 				//console.log("onmouseup")
 				document.onmousemove = null;
 			};
-
 			return false;
 		};
 	}
 };
 
 export default {
+	name: 'previewPhoto',
 	directives: { drag },
 	data() {
 		return {
-			dialogTableVisible: false,
+			dialogVisible: false,
 			canMagnifyImg: false,
 			isBigImg: false,
 			isFitImg: false,
@@ -123,10 +122,10 @@ export default {
 			arrowVisible: "always"
 		};
 	},
-	props: ["pictureArray"],
+	props: ["previewPictureArray"],
 	watch: {
-		pictureArray() {
-			if (this.pictureArray.length <= 1) {
+		previewPictureArray() {
+			if (this.previewPictureArray.length <= 1) {
 				this.arrowVisible = "never";
 			} else {
 				this.arrowVisible = "always";
@@ -136,13 +135,11 @@ export default {
 	methods: {
 		//图片切换
 		handleImgChange(index, oldIndex) {
-			//console.log(index, oldIndex)
 			this.initialIndex = index;
 			this.imgSizeLimit(index);
 		},
 		//击图片放大或缩小
 		changeImgSize(index) {
-			//console.log("dbclick")
 			if (this.canMagnifyImg && !translate) {
 				if (this.isFitImg) {
 					this.isFitImg = false;
@@ -158,17 +155,11 @@ export default {
 		},
 		//切换选中的图片
 		handleSetActiveItem(index = 0) {
-			if (!this.initialIndex) {
-				this.initialIndex = index;
-				this.$nextTick(function() {
-					this.$refs.carousel.setActiveItem(index);
-				});
-			} else {
-				this.initialIndex = index;
-				this.$nextTick(function() {
-					this.$refs.carousel.setActiveItem(index);
-				});
-			}
+			this.dialogVisible = true;
+			this.initialIndex = index;
+			this.$nextTick(() => {
+				this.$refs.carousel.setActiveItem(index);
+			});
 			this.imgSizeLimit(index);
 		},
 		//判断图片的大小限制
@@ -190,14 +181,15 @@ export default {
 					this.isFitImg = true;
 					this.isBigImg = false;
 				}
-
 				img.style.top = "auto";
 				img.style.left = "auto";
 			});
 		},
-		//弹框是否显示
-		setDialogTableVisible() {
-			this.dialogTableVisible = !this.dialogTableVisible;
+		closeDialog() {
+			this.dialogVisible = false;
+		},
+		openDialog() {
+			this.dialogVisible = true;
 		}
 	}
 };
